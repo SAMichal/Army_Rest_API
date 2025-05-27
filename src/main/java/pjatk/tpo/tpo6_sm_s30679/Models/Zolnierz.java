@@ -1,10 +1,9 @@
 package pjatk.tpo.tpo6_sm_s30679.Models;
 
 import jakarta.persistence.*;
-import org.springframework.data.annotation.Id;
 
 @Entity
-public class Żołnierz {
+public class Zolnierz {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
@@ -17,19 +16,20 @@ public class Żołnierz {
     @Enumerated(EnumType.STRING)
     private Status status;
     //tylko jeśli status = szpital polowy
-    private String obrażenia;
+    @Column(nullable = true)
+    private String obrazenia;
 
-    public Żołnierz() {
+    public Zolnierz() {
     }
 
-    public Żołnierz(int id, String imie, String nazwisko, String pesel, Ranga ranga, Status status, String obrażenia) {
+    public Zolnierz(int id, String imie, String nazwisko, String pesel, Ranga ranga, Status status, String obrazenia) {
         this.id = id;
         this.imie = imie;
         this.nazwisko = nazwisko;
         this.pesel = pesel;
         this.ranga = ranga;
         this.status = status;
-        this.obrażenia = obrażenia;
+        this.obrazenia = obrazenia;
     }
 
     public int getId() {
@@ -56,8 +56,8 @@ public class Żołnierz {
         return status;
     }
 
-    public String getObrażenia() {
-        return obrażenia;
+    public String getObrazenia() {
+        return obrazenia;
     }
 
     public void setId(int id) {
@@ -69,7 +69,7 @@ public class Żołnierz {
     }
 
     public void setNazwisko(String nazwisko) {
-        this.nazwisko = nazwisko;
+        this.nazwisko = nazwisko; // Poprawiono: przypisanie wartości
     }
 
     public void setPesel(String pesel) {
@@ -84,7 +84,7 @@ public class Żołnierz {
         this.status = status;
     }
 
-    public void setObrażenia(String obrażenia) {
-        this.obrażenia = obrażenia;
+    public void setObrazenia(String obrażenia) {
+        this.obrazenia = obrażenia;
     }
 }
