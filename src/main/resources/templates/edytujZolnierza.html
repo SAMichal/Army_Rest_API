@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Armia</title>
+    <style>
+        body
+        {
+            font-family: 'Trebuchet MS', sans-serif;
+            background-color: #1e2c1a;
+            color: #e6e6e6;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+        h1
+        {
+            background-color: #2d3f27;
+            padding: 20px 0;
+            margin: 0;
+            font-size: 36px;
+            color: #b5d3a1;
+            letter-spacing: 2px;
+            text-shadow: 1px 1px #000;
+        }
+        .buttons
+        {
+            background-color: #2d3f27;
+            padding: 15px 0;
+            box-shadow: 0 2px 5px #00000055;
+        }
+        button
+        {
+            background-color: #4a5937;
+            color: #e6e6e6;
+            margin: 5px;
+            padding: 10px 20px;
+            font-size: 16px;
+            font-weight: bold;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        button:hover
+        {
+            background-color: #6e8b47;
+            transform: scale(1.05);
+        }
+        table
+        {
+            margin: 20px auto;
+            border-collapse: collapse;
+            width: 90%;
+            background-color: #2d3f27;
+            box-shadow: 0 0 10px #00000080;
+            color: #d0f0c0;
+        }
+        th, td
+        {
+            border: 1px solid #4a5937;
+            padding: 10px;
+        }
+        th
+        {
+            background-color: #3b4e2b;
+            color: #b5d3a1;
+            font-size: 16px;
+        }
+        input, select
+        {
+            padding: 8px;
+            width: 100%;
+            border: 1px solid #4a5937;
+            border-radius: 3px;
+            background-color: #1e2c1a;
+            color: #e6e6e6;
+        }
+        input::placeholder
+        {
+            color: #888;
+        }
+        form
+        {
+            margin: 20px auto;
+            width: 350px;
+            background-color: #2d3f27;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px #00000080;
+        }
+        label
+        {
+            margin-top: 10px;
+            display: block;
+            font-weight: bold;
+            color: #b5d3a1;
+        }
+        .error
+        {
+            color: #ff8080;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        .edit-btn
+        {
+            background-color: #4a5937;
+            color: #e6e6e6;
+        }
+        .save-btn
+        {
+            background-color: #6e8b47;
+            color: #fff;
+        }
+        .edit-btn:hover, .save-btn:hover
+        {
+            filter: brightness(110%);
+        }
+    </style>
+</head>
+<body>
+
+<h1>Armia</h1>
+
+<div class="buttons">
+    <button onclick="location.href='/data/zolnierze'">Wyświetl żołnierzy</button>
+    <button onclick="location.href='/data/dodajZolnierza'">Dodaj żołnierza</button>
+    <button onclick="location.href='/data/usunZolnierza'">Usuń żołnierza</button>
+    <button onclick="location.href='/data/edytujZolnierza'">Edytuj żołnierza</button>
+</div>
+
+<table id="zolnierzeTable">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Imię</th>
+        <th>Nazwisko</th>
+        <th>PESEL</th>
+        <th>Ranga</th>
+        <th>Status</th>
+        <th>Obrażenia</th>
+        <th>Akcja</th>
+    </tr>
+    </thead>
+    <tbody>
+    </tbody>
+</table>
+
+<script>
+    let edytujId=null;
+    function loadZolnierze()
+    {
+        fetch('/data').then(res => res.json())
+            .then(data => {
+                const tbody=document.querySelector('#zolnierzeTable tbody');
+                tbody.innerHTML='';
+                data.forEach(z => {
+                    const tr=document.createElement('tr');
+                    if(edytujId === z.id)
+                    {
+                        tr.innerHTML = `
+                            <td>${z.id}</td>
+                            <td><input type="text" id="imie-${z.id}" value="${z.imie}"></td>
+                            <td><input type="text" id="nazwisko-${z.id}" value="${z.nazwisko}"></td>
+                            <td><input type="text" id="pesel-${z.id}" value="${z.pesel}"></td>
+                            <td>
+                                <select id="ranga-${z.id}">
+                                    <option value="SZEREGOWY" ${z.ranga === 'SZEREGOWY' ? 'selected' : ''}>SZEREGOWY</option>
+                                    <option value="KAPRAL" ${z.ranga === 'KAPRAL' ? 'selected' : ''}>KAPRAL</option>
+                                    <option value="PLUTONOWY" ${z.ranga === 'PLUTONOWY' ? 'selected' : ''}>PLUTONOWY</option>
+                                    <option value="PODPORUCZNIK" ${z.ranga === 'PODPORUCZNIK' ? 'selected' : ''}>PODPORUCZNIK</option>
+                                    <option value="PORUCZNIK" ${z.ranga === 'PORUCZNIK' ? 'selected' : ''}>PORUCZNIK</option>
+                                </select>
+                            </td>
+                            <td>
+                                <select id="status-${z.id}" onchange="obrazenia_edycja(${z.id})">
+                                    <option value="AKTYWNY" ${z.status === 'AKTYWNY' ? 'selected' : ''}>AKTYWNY</option>
+                                    <option value="KOSZARY" ${z.status === 'KOSZARY' ? 'selected' : ''}>KOSZARY</option>
+                                    <option value="MARTWY" ${z.status === 'MARTWY' ? 'selected' : ''}>MARTWY</option>
+                                    <option value="SZPITAL_POLOWY" ${z.status === 'SZPITAL_POLOWY' ? 'selected' : ''}>SZPITAL_POLOWY</option>
+                                </select>
+                            </td>
+                            <td>
+                                <input type="text" id="obrazenia-${z.id}" value="${z.obrazenia || ''}" style="display: ${status_dla_obrazen(z.status) ? 'inline-block' : 'none'};">
+                            </td>
+                            <td>
+                                <button class="save-btn" onclick="zapisz_edycje(${z.id})">Zatwierdź</button>
+                                <button class="edit-btn" onclick="przerwij_edycje()">Anuluj</button>
+                            </td>
+                        `;
+                    }
+                    else
+                    {
+                        tr.innerHTML = `
+                            <td>${z.id}</td>
+                            <td>${z.imie}</td>
+                            <td>${z.nazwisko}</td>
+                            <td>${z.pesel}</td>
+                            <td>${z.ranga}</td>
+                            <td>${z.status}</td>
+                            <td>${z.obrazenia || ''}</td>
+                            <td><button class="edit-btn" onclick="edytuj(${z.id})">Edytuj</button></td>
+                        `;
+                    }
+                    tbody.appendChild(tr);
+                });
+            });
+    }
+
+    function status_dla_obrazen(status)
+    {
+        return status==='SZPITAL_POLOWY' || status==='MARTWY';
+    }
+
+    function obrazenia_edycja(id)
+    {
+        const wybrany_status=document.getElementById(`status-${id}`);
+        const wpisane_obrazenia=document.getElementById(`obrazenia-${id}`);
+        if(status_dla_obrazen(wybrany_status.value))
+        {
+            wpisane_obrazenia.style.display='inline-block';
+        }
+        else
+        {
+            wpisane_obrazenia.style.display='none';
+            wpisane_obrazenia.value='';
+        }
+    }
+    function edytuj(id)
+    {
+        edytujId=id;
+        loadZolnierze();
+    }
+    function przerwij_edycje()
+    {
+        edytujId=null;
+        loadZolnierze();
+    }
+    function zapisz_edycje(id)
+    {
+        const imie=document.getElementById(`imie-${id}`).value.trim();
+        const nazwisko=document.getElementById(`nazwisko-${id}`).value.trim();
+        const pesel=document.getElementById(`pesel-${id}`).value.trim();
+        const ranga=document.getElementById(`ranga-${id}`).value;
+        const status=document.getElementById(`status-${id}`).value;
+        let obrazenia=document.getElementById(`obrazenia-${id}`).value.trim();
+        if(!status_dla_obrazen(status))
+        {
+            obrazenia = null;
+        }
+        if(!imie || !nazwisko || !pesel || pesel.length !== 11 || !/^\d+$/.test(pesel))
+        {
+            alert("Sprawdź poprawność pól Imię, Nazwisko i PESEL (PESEL musi mieć 11 cyfr).");
+            return;
+        }
+        const zolnierz=
+            {
+                imie,
+                nazwisko,
+                pesel,
+                ranga,
+                status,
+                obrazenia
+            };
+
+        fetch(`/data/${id}`,
+            {
+                method: 'PUT',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(zolnierz)
+            })
+            .then(res =>
+            {
+                if(!res.ok)
+                    throw new Error('Błąd podczas aktualizacji żołnierza');
+                edytujId=null;
+                loadZolnierze();
+            })
+            .catch(err => alert(err.message));
+    }
+    loadZolnierze();
+</script>
+</body>
+</html>

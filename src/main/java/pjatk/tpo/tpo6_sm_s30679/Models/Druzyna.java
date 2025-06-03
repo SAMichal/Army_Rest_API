@@ -15,5 +15,5 @@ public class Druzyna
     private int id;
     private String nazwa;
     //przedstawia listę żołnierzy należących do drużyny
-    private ArrayList<Zolnierz> zolnierze=new ArrayList<>();
+    //private ArrayList<Zolnierz> zolnierze=new ArrayList<>();
 }

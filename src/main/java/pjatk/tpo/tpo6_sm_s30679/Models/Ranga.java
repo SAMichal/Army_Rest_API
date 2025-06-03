@@ -1,5 +1,6 @@
 package pjatk.tpo.tpo6_sm_s30679.Models;
 
-public enum Ranga {
+public enum Ranga
+{
     SZEREGOWY, KAPRAL, PLUTONOWY, SIERZANT, CHORAZY, PODPORUCZNIK,PORUCZNIK, KAPITAN, MAJOR, PODPULKOWNIK,PULKOWNIK, GENERAL
 }

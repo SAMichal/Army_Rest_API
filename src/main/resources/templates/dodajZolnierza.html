@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Armia</title>
+    <style>
+        body
+        {
+            font-family: 'Trebuchet MS', sans-serif;
+            background-color: #1e2c1a;
+            color: #e6e6e6;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+        h1
+        {
+            background-color: #2d3f27;
+            padding: 20px 0;
+            margin: 0;
+            font-size: 36px;
+            color: #b5d3a1;
+            letter-spacing: 2px;
+            text-shadow: 1px 1px #000;
+        }
+        .buttons
+        {
+            background-color: #2d3f27;
+            padding: 15px 0;
+            box-shadow: 0 2px 5px #00000055;
+        }
+        button
+        {
+            background-color: #4a5937;
+            color: #e6e6e6;
+            margin: 5px;
+            padding: 10px 20px;
+            font-size: 16px;
+            font-weight: bold;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        button:hover
+        {
+            background-color: #6e8b47;
+            transform: scale(1.05);
+        }
+        table
+        {
+            margin: 20px auto;
+            border-collapse: collapse;
+            width: 90%;
+            background-color: #2d3f27;
+            box-shadow: 0 0 10px #00000080;
+            color: #d0f0c0;
+        }
+        th, td
+        {
+            border: 1px solid #4a5937;
+            padding: 10px;
+        }
+        th
+        {
+            background-color: #3b4e2b;
+            color: #b5d3a1;
+            font-size: 16px;
+        }
+        input, select
+        {
+            padding: 8px;
+            width: 100%;
+            border: 1px solid #4a5937;
+            border-radius: 3px;
+            background-color: #1e2c1a;
+            color: #e6e6e6;
+        }
+        input::placeholder
+        {
+            color: #888;
+        }
+        form
+        {
+            margin: 20px auto;
+            width: 350px;
+            background-color: #2d3f27;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px #00000080;
+        }
+        label
+        {
+            margin-top: 10px;
+            display: block;
+            font-weight: bold;
+            color: #b5d3a1;
+        }
+        .error
+        {
+            color: #ff8080;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        .edit-btn
+        {
+            background-color: #4a5937;
+            color: #e6e6e6;
+        }
+        .save-btn
+        {
+            background-color: #6e8b47;
+            color: #fff;
+        }
+        .edit-btn:hover, .save-btn:hover
+        {
+            filter: brightness(110%);
+        }
+    </style>
+</head>
+<body>
+
+<h1>Armia</h1>
+
+<div class="buttons">
+    <button onclick="location.href='/data/zolnierze'">Wyświetl żołnierzy</button>
+    <button onclick="location.href='/data/dodajZolnierza'">Dodaj żołnierza</button>
+    <button onclick="location.href='/data/usunZolnierza'">Usuń żołnierza</button>
+    <button onclick="location.href='/data/edytujZolnierza'">Edytuj żołnierza</button>
+</div>
+
+<form id="zolnierzForm">
+    <label>Imię: <input type="text" name="imie" required></label>
+    <label>Nazwisko: <input type="text" name="nazwisko" required></label>
+    <label>PESEL: <input type="text" name="pesel" required></label>
+    <label>RANGA:
+        <select name="ranga" required>
+            <option value="">-- WYBIERZ RANGĘ --</option>
+            <option value="SZEREGOWY">SZEREGOWY</option>
+            <option value="KAPRAL">KAPRAL</option>
+            <option value="PLUTONOWY">PLUTONOWY</option>
+            <option value="SIERZANT">SIERZANT</option>
+            <option value="CHORAZY">CHORAZY</option>
+            <option value="PODPORUCZNIK">PODPORUCZNIK</option>
+            <option value="PORUCZNIK">PORUCZNIK</option>
+            <option value="KAPITAN">KAPITAN</option>
+            <option value="MAJOR">MAJOR</option>
+            <option value="PODPULKOWNIK">PODPULKOWNIK</option>
+            <option value="PULKOWNIK">PULKOWNIK</option>
+            <option value="GENERAL">GENERAL</option>
+        </select>
+    </label>
+    <label>STATUS:
+        <select name="status" required onchange="dynamiczne_obrazenia(this.value)">
+            <option value="">-- WYBIERZ STATUS --</option>
+            <option value="AKTYWNY">AKTYWNY</option>
+            <option value="KOSZARY">KOSZARY</option>
+            <option value="MARTWY">MARTWY</option>
+            <option value="SZPITAL_POLOWY">SZPITAL_POLOWY</option>
+        </select>
+    </label>
+
+    <div id="obrazeniaDiv" style="display: none;">
+        <label>OBRAŻENIA: <input type="text" name="obrazenia"></label>
+    </div>
+
+    <button type="submit">Zatwierdź</button>
+    <p class="error" id="errorMsg"></p>
+</form>
+
+<script>
+    function dynamiczne_obrazenia(status)
+    {
+        const obrazeniaDiv=document.getElementById('obrazeniaDiv');
+        if(status==='SZPITAL_POLOWY' || status==='MARTWY') {
+            obrazeniaDiv.style.display='block';
+        }
+        else
+        {
+            obrazeniaDiv.style.display='none';
+            document.querySelector('input[name="obrazenia"]').value = '';
+        }
+    }
+
+    document.getElementById('zolnierzForm').addEventListener('submit', function (e) {
+        e.preventDefault();
+        const form=e.target;
+        const formData=new FormData(form);
+        const data={};
+        formData.forEach((v, k) => data[k] = v);
+        fetch('/data', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(data)})
+            .then(res => {
+                if(!res.ok)
+                    throw new Error('Błąd walidacji danych');
+                alert("Żołnierz dodany!");
+                location.href = '/zolnierze';
+            })
+            .catch(err => {
+                document.getElementById('errorMsg').innerText = err.message;
+            });
+    });
+</script>
+</body>
+</html>

@@ -13,5 +13,5 @@ public class Pulk {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     private String nazwa;
-    private ArrayList<Druzyna>druzyny;
+    //private ArrayList<Druzyna>druzyny;
 }

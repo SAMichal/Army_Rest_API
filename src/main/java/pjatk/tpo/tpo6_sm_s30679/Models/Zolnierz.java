@@ -3,9 +3,10 @@ package pjatk.tpo.tpo6_sm_s30679.Models;
 import jakarta.persistence.*;
 
 @Entity
-public class Zolnierz {
+public class Zolnierz
+{
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
     private int id;
     private String imie;
     private String nazwisko;
@@ -15,7 +16,7 @@ public class Zolnierz {
     //{aktywny, koszary, martwy, szpital polowy}
     @Enumerated(EnumType.STRING)
     private Status status;
-    //tylko jeśli status = szpital polowy
+    //tylko jeśli status = szpital polowy lub martwy
     @Column(nullable = true)
     private String obrazenia;
 

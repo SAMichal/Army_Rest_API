@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Armia</title>
+    <style>
+        body
+        {
+            font-family: 'Trebuchet MS', sans-serif;
+            background-color: #1e2c1a;
+            color: #e6e6e6;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+        h1
+        {
+            background-color: #2d3f27;
+            padding: 20px 0;
+            margin: 0;
+            font-size: 36px;
+            color: #b5d3a1;
+            letter-spacing: 2px;
+            text-shadow: 1px 1px #000;
+        }
+        .buttons
+        {
+            background-color: #2d3f27;
+            padding: 15px 0;
+            box-shadow: 0 2px 5px #00000055;
+        }
+        button
+        {
+            background-color: #4a5937;
+            color: #e6e6e6;
+            margin: 5px;
+            padding: 10px 20px;
+            font-size: 16px;
+            font-weight: bold;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        button:hover
+        {
+            background-color: #6e8b47;
+            transform: scale(1.05);
+        }
+        table
+        {
+            margin: 20px auto;
+            border-collapse: collapse;
+            width: 90%;
+            background-color: #2d3f27;
+            box-shadow: 0 0 10px #00000080;
+            color: #d0f0c0;
+        }
+        th, td
+        {
+            border: 1px solid #4a5937;
+            padding: 10px;
+        }
+        th
+        {
+            background-color: #3b4e2b;
+            color: #b5d3a1;
+            font-size: 16px;
+        }
+        input, select
+        {
+            padding: 8px;
+            width: 100%;
+            border: 1px solid #4a5937;
+            border-radius: 3px;
+            background-color: #1e2c1a;
+            color: #e6e6e6;
+        }
+        input::placeholder
+        {
+            color: #888;
+        }
+        form
+        {
+            margin: 20px auto;
+            width: 350px;
+            background-color: #2d3f27;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px #00000080;
+        }
+        label
+        {
+            margin-top: 10px;
+            display: block;
+            font-weight: bold;
+            color: #b5d3a1;
+        }
+        .error
+        {
+            color: #ff8080;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        .edit-btn
+        {
+            background-color: #4a5937;
+            color: #e6e6e6;
+        }
+        .save-btn
+        {
+            background-color: #6e8b47;
+            color: #fff;
+        }
+        .edit-btn:hover, .save-btn:hover
+        {
+            filter: brightness(110%);
+        }
+    </style>
+</head>
+<body>
+
+<h1>Armia</h1>
+
+<div class="buttons">
+    <button onclick="location.href='/data/zolnierze'">Wyświetl żołnierzy</button>
+    <button onclick="location.href='/data/dodajZolnierza'">Dodaj żołnierza</button>
+    <button onclick="location.href='/data/usunZolnierza'">Usuń żołnierza</button>
+    <button onclick="location.href='/data/edytujZolnierza'">Edytuj żołnierza</button>
+</div>
+
+<table id="zolnierzeTable">
+    <thead>
+    <tr>
+        <th class="sortable" onclick="loadData('id')">ID</th>
+        <th class="sortable" onclick="loadData('imie')">Imię</th>
+        <th class="sortable" onclick="loadData('nazwisko')">Nazwisko</th>
+        <th>PESEL</th>
+        <th class="sortable" onclick="loadData('ranga')">Ranga</th>
+        <th class="sortable" onclick="loadData('status')">Status</th>
+        <th>Obrażenia</th>
+    </tr>
+    </thead>
+    <tbody id="zolnierzeBody">
+    </tbody>
+</table>
+
+<script>
+    let currentSortDir='asc';
+    let lastSortBy='';
+
+    function loadData(sortBy='')
+    {
+        if(sortBy&&sortBy===lastSortBy)
+        {
+            currentSortDir=currentSortDir === 'asc' ? 'desc' : 'asc';
+        }
+        else
+        {
+            currentSortDir='asc';
+        }
+        lastSortBy=sortBy;
+        let url='/data';
+        if(sortBy)
+        {
+            url+=`?sortBy=${sortBy}&sortDir=${currentSortDir}`;
+        }
+        fetch(url).then(response => response.json())
+            .then(data =>
+            {
+                const tbody = document.getElementById('zolnierzeBody');
+                tbody.innerHTML = '';
+                data.forEach(z => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${z.id}</td>
+                        <td>${z.imie}</td>
+                        <td>${z.nazwisko}</td>
+                        <td>${z.pesel}</td>
+                        <td>${z.ranga}</td>
+                        <td>${z.status}</td>
+                        <td>${z.obrazenia ?? ''}</td>
+                    `;
+                    tbody.appendChild(row);});
+            }).catch(err => alert("Błąd pobierania danych: " + err));
+    }
+    window.onload=()=>loadData();
+</script>
+</body>
+</html>
