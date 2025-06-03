@@ -18,6 +18,7 @@ public class ZolnierzController {
 
     @Autowired
     private ZolnierzService zolnierzService;
+
     //Dla interfejsu graficznego
     @GetMapping("/armia")
     public String glownyInterfejs() {
