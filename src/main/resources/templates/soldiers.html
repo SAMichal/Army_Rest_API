@@ -1,0 +1,83 @@
+<div layout:fragment="content"></div>
+    <h2 class="text-2xl font-bold mb-4 text-gray-800">Lista Żołnierzy</h2>
+    <a th:href="@{/soldiers/new}" class="btn btn-primary mb-6">Dodaj Nowego Żołnierza</a>
+
+    <div class="mt-8 overflow-x-auto">
+        <table>
+            <thead>
+            <tr>
+                <th>
+                    <a th:href="@{/soldiers(sortBy='id', sortDir=${(sortBy ?: '') == 'id' and (sortDir ?: '') == 'asc' ? 'desc' : 'asc'})}" class="sort-link">
+                        ID
+                        <svg th:if="${sortBy == 'id'}" class="sort-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                            <path th:if="${sortDir == 'asc'}" d="M7 14l5-5 5 5z"/>
+                            <path th:if="${sortDir == 'desc'}" d="M7 10l5 5 5-5z"/>
+                            <path th:unless="${sortBy == 'id'}" d="M12 5l-5 5h10zM12 19l5-5H7z"/>
+                        </svg>
+                    </a>
+                </th>
+                <th>
+                    <a th:href="@{/soldiers(sortBy='imie', sortDir=${(sortBy ?: '') == 'imie' and (sortDir ?: '') == 'asc' ? 'desc' : 'asc'})}" class="sort-link">
+                        Imię
+                        <svg th:if="${sortBy == 'imie'}" class="sort-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                            <path th:if="${sortDir == 'asc'}" d="M7 14l5-5 5 5z"/>
+                            <path th:if="${sortDir == 'desc'}" d="M7 10l5 5 5-5z"/>
+                            <path th:unless="${sortBy == 'imie'}" d="M12 5l-5 5h10zM12 19l5-5H7z"/>
+                        </svg>
+                    </a>
+                </th>
+                <th>
+                    <a th:href="@{/soldiers(sortBy='nazwisko', sortDir=${(sortBy ?: '') == 'nazwisko' and (sortDir ?: '') == 'asc' ? 'desc' : 'asc'})}" class="sort-link">
+                        Nazwisko
+                        <svg th:if="${sortBy == 'nazwisko'}" class="sort-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                            <path th:if="${sortDir == 'asc'}" d="M7 14l5-5 5 5z"/>
+                            <path th:if="${sortDir == 'desc'}" d="M7 10l5 5 5-5z"/>
+                            <path th:unless="${sortBy == 'nazwisko'}" d="M12 5l-5 5h10zM12 19l5-5H7z"/>
+                        </svg>
+                    </a>
+                </th>
+                <th>PESEL</th>
+                <th>
+                    <a th:href="@{/soldiers(sortBy='ranga', sortDir=${(sortBy ?: '') == 'ranga' and (sortDir ?: '') == 'asc' ? 'desc' : 'asc'})}" class="sort-link">
+                        Ranga
+                        <svg th:if="${sortBy == 'ranga'}" class="sort-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                            <path th:if="${sortDir == 'asc'}" d="M7 14l5-5 5 5z"/>
+                            <path th:if="${sortDir == 'desc'}" d="M7 10l5 5 5-5z"/>
+                            <path th:unless="${sortBy == 'ranga'}" d="M12 5l-5 5h10zM12 19l5-5H7z"/>
+                        </svg>
+                    </a>
+                </th>
+                <th>
+                    <a th:href="@{/soldiers(sortBy='status', sortDir=${(sortBy ?: '') == 'status' and (sortDir ?: '') == 'asc' ? 'desc' : 'asc'})}" class="sort-link">
+                        Status
+                        <svg th:if="${sortBy == 'status'}" class="sort-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                            <path th:if="${sortDir == 'asc'}" d="M7 14l5-5 5 5z"/>
+                            <path th:if="${sortDir == 'desc'}" d="M7 10l5 5 5-5z"/>
+                            <path th:unless="${sortBy == 'status'}" d="M12 5l-5 5h10zM12 19l5-5H7z"/>
+                        </svg>
+                    </a>
+                </th>
+                <th>Obrażenia</th>
+                <th>Akcje</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="zolnierz : ${żołnierze}" class="table-row">
+                <td th:text="${zolnierz.id}"></td>
+                <td th:text="${zolnierz.imie}"></td>
+                <td th:text="${zolnierz.nazwisko}"></td>
+                <td th:text="${zolnierz.pesel}"></td>
+                <td th:text="${zolnierz.ranga}"></td>
+                <td th:text="${zolnierz.status}"></td>
+                <td th:text="${zolnierz.obrazenia != null ? zolnierz.obrazenia : 'N/A'}"></td>
+                <td class="flex flex-col sm:flex-row gap-2">
+                    <a th:href="@{/soldiers/edit/{id}(id=${zolnierz.id})}" class="btn btn-secondary text-sm px-3 py-1">Edytuj</a>
+                    <a th:href="@{/soldiers/delete/{id}(id=${zolnierz.id})}" class="btn btn-danger text-sm px-3 py-1"
+                       onclick="return confirm('Czy na pewno chcesz usunąć tego żołnierza?');">Usuń</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        <div th:if="${żołnierze.isEmpty()}" class="text-center text-gray-600 mt-4">Brak żołnierzy do wyświetlenia.</div>
+    </div>
+</div>
