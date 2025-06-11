@@ -76,7 +76,6 @@ public class ZolnierzController {
 
     @PostMapping()
     public ResponseEntity<Zolnierz> dodaj_zolnierza(@RequestBody Zolnierz zolnierz) {
-        Zolnierz nowy_zolnierz=zolnierzService.saveZolnierz(zolnierz);
         try
         {
             if(zolnierz.getPesel().length()!=11 || !(zolnierz.getPesel().matches("\\d+")))
@@ -99,6 +98,7 @@ public class ZolnierzController {
             System.out.println(e.getMessage());
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
+        Zolnierz nowy_zolnierz=zolnierzService.saveZolnierz(zolnierz);
         if(zolnierz.getObrazenia()==null)
         {
             zolnierz.setObrazenia("brak");
